@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Narrativa Embriaguez ao volante</title>
+	<h1>PRF DANIEL LIMA - GFTT BJ</h1>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;	
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Narrativa Embriaguez ao volante</h1>
+        <form id="textForm">
+            <div class="form-group">
+                <label for="date">Data (Ex.: 29 de Julho de 2024):</label>
+                <input type="text" id="date" name="date">
+            </div>
+            <div class="form-group">
+                <label for="time">Horário (Ex.: 21 horas e 30 minutos):</label>
+                <input type="text" id="time" name="time" value="20 horas e 15 minutos">
+            </div>
+            <div class="form-group">
+                <label for="br">BR (Ex.: 135):</label>
+                <input type="text" id="br" name="br" value="135">
+            </div>
+            <div class="form-group">
+                <label for="km">KM (Ex.: 350):</label>
+                <input type="text" id="km" name="km" value="350">
+            </div>
+            <div class="form-group">
+                <label for="city">Cidade/Estado (Ex.: Bom Jesus/PI):</label>
+                <input type="text" id="city" name="city" value="Bom Jesus/PI">
+            </div>
+            <div class="form-group">
+                <label for="vehicle">Marca e Modelo do Veículo (Ex.: HONDA CG 125 FAN KS):</label>
+                <input type="text" id="vehicle" name="vehicle" value="FIAT SIENA UBER PRATA GALADO">
+            </div>
+            <div class="form-group">
+                <label for="motivo">Motivo da Abordagem:</label>
+                <select id="motivo" name="motivo">
+                    <option value="zigzag">O condutor dirigia realizando manobras de zigue-zague na via</option>
+                    <option value="sem_capacete">O condutor conduzia o veículo sem capacete de segurança</option>
+                    <option value="passageiro_sem_capacete">O condutor transportava passageiro sem utilizar capacete de segurança</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="plate">Placa (Ex.: PIX3836):</label>
+                <input type="text" id="plate" name="plate" value="ABC1234">
+            </div>
+            <div class="form-group">
+                <label for="name">Condutor (Ex.: CANETA AZUL DA SILVA):</label>
+                <input type="text" id="name" name="name" value="CANETA AZUL DA SILVA">
+            </div>
+            <div class="form-group">
+                <label for="cpf">CPF do condutor (Ex.: 123.456.789-00):</label>
+                <input type="text" id="cpf" name="cpf" value="123.456.789-00">
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="driver_disabled" name="driver_disabled">
+                    Condutor inabilitado para conduzir veículos automotores
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="ethanol">Valor do Etilômetro (Ex.: 0.77):</label>
+                <input type="text" id="ethanol" name="ethanol" value="0.50">
+            </div>
+            <div class="form-group">
+				<label for="ethanol_considerado">Valor Considerado (Ex.: 0.70):</label>
+				<input type="text" id="ethanol_considerado" name="ethanol_considerado" value="0.45">
+            </div>
+            <div class="form-group">
+                <label for="numteste">Número do Comprovante (Ex.: 1134):</label>
+                <input type="text" id="numteste" name="numteste" value="1150">
+            </div>
+            <div class="form-group">
+                <label for="serialetilometro">Número de Série do Etilômetro (Ex.: 22003357):</label>
+                <input type="text" id="serialetilometro" name="serialetilometro" value="22003357">
+            </div>
+            <div class="form-group">
+                <label for="licensing_status">Status do Licenciamento:</label>
+                <select id="licensing_status" name="licensing_status">
+                    <option value="atrasado">Licenciamento em atraso</option>
+                    <option value="regular">Licenciamento regular</option>
+                    <option value="falta_habilitado">Falta de condutor habilitado</option>
+                </select>
+            </div>
+            <div class="form-group" id="anodolicenciamento-group">
+                <label for="anodolicenciamento">Ano do Último licenciamento (Ex.: 2023):</label>
+                <input type="text" id="anodolicenciamento" name="anodolicenciamento">
+            </div>
+            <button type="button" onclick="generateText()">Gerar Narrativa</button>
+            <button type="button" onclick="copyToClipboard()">Copiar pra área de transferência</button>
+        </form>
+        <div class="result" id="result">
+            <!-- Resulting text will be displayed here -->
+        </div>
+    </div>
+    
+    <script>
+        function formatDate(date) {
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            const dateString = date.toLocaleDateString('pt-BR', options);
+            // Capitalize the first letter of the month
+            return dateString.replace(/(\w+ de )(\w+)/, (_, prefix, month) => prefix + month.charAt(0).toUpperCase() + month.slice(1));
+        }
+
+        function setDefaultDate() {
+            const today = new Date();
+            const formattedDate = formatDate(today);
+            document.getElementById('date').value = formattedDate;
+            // Set the driver_disabled checkbox to checked
+            document.getElementById('driver_disabled').checked = true;
+            document.getElementById('licensing_status').value = 'falta_habilitado'; // Set default value here
+        }
+
+        function generateText() {
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+            const br = document.getElementById('br').value;
+            const km = document.getElementById('km').value;
+            const city = document.getElementById('city').value;
+            const numteste = document.getElementById('numteste').value;
+            const serialetilometro = document.getElementById('serialetilometro').value;
+            const vehicle = document.getElementById('vehicle').value;
+            const plate = document.getElementById('plate').value;
+            const name = document.getElementById('name').value;
+            const cpf = document.getElementById('cpf').value;
+            const ethanol = document.getElementById('ethanol').value;
+            const ethanol_considerado = document.getElementById('ethanol_considerado').value;
+            const licensingStatus = document.getElementById('licensing_status').value;
+            const anodolicenciamento = document.getElementById('anodolicenciamento').value;
+            const driverDisabled = document.getElementById('driver_disabled').checked;
+            const motivo = document.getElementById('motivo').value;
+
+            let licensingText;
+            switch (licensingStatus) {
+                case 'atrasado':
+                    licensingText = `O veículo envolvido foi recolhido ao pátio contratado da PRF por estar com licenciamento em atraso desde ${anodolicenciamento}.`;
+                    break;
+                case 'regular':
+                    licensingText = 'O veículo envolvido foi entregue a condutor habilitado e com teste do etilômetro com resultado 0.00 mg/L.';
+                    break;
+                case 'falta_habilitado':
+                    licensingText = 'O veículo envolvido foi recolhido ao pátio contratado da PRF por falta de condutor habilitado.';
+                    break;
+                default:
+                    licensingText = 'Falta de condutor habilitado';
+            }
+
+            let motivoText;
+            switch (motivo) {
+                case 'zigzag':
+                    motivoText = 'O condutor dirigia realizando manobras de zigue-zague na via,';
+                    break;
+                case 'sem_capacete':
+                    motivoText = 'O condutor conduzia o veículo sem capacete de segurança,';
+                    break;
+                case 'passageiro_sem_capacete':
+                    motivoText = 'O condutor transportava passageiro sem utilizar capacete de segurança,';
+                    break;
+                default:
+                    motivoText = 'O motivo da abordagem não foi especificado.';
+            }
+
+            const driverStatusText = driverDisabled ? ', inabilitado para conduzir veículos automotores' : '';
+
+            const resultText = 
+                `Em ${date}, por volta das ${time}, esta equipe estava realizando fiscalização estática de Alcoolemia no km ${km} da BR ${br}, no município de ${city}, quando foi dada ordem de parada ao veículo ${vehicle}, de placa ${plate}, conduzido por ${name} (CPF: ${cpf})${driverStatusText}. ${motivoText} o que motivou a abordagem. O condutor apresentava sinais de embriaguez como fala embargada, vestes em desordem, olhos vermelhos e odor etílico. A equipe PRF convidou o condutor a realizar o teste do etilômetro. O abordado relatou que havia ingerido bebidas alcoólicas ao longo da noite. O envolvido foi convidado a realizar o exame de alcoolemia, conforme o comprovante nº ${numteste}, impresso pelo aparelho (etilômetro) de marca ALCOLIZER, modelo LE5 e número de série ${serialetilometro}, constatou-se o teor de ${ethanol} miligramas de álcool por litro de ar expelido pelos pulmões, sendo considerado, conforme a Portaria n.º 369/2021/INMETRO, o valor de ${ethanol_considerado} mg/L. Diante das informações obtidas foi constatada ocorrência de conduzir veículo com capacidade psicomotora alterada em razão da influência de álcool - Embriaguez ao volante. Foi dada voz de prisão ao condutor, que foi informado de todos os seus direitos constitucionais, e feito o encaminhamento para a Delegacia de Polícia Civil de ${city} para os procedimentos legais. Não foram utilizadas algemas, devido a colaboração do autor. Por fim, informa-se que o conduzido foi entregue sem nenhuma lesão aparente. ${licensingText}`;
+
+            document.getElementById('result').innerText = resultText;
+        }
+
+        function copyToClipboard() {
+            const resultText = document.getElementById('result').innerText;
+            navigator.clipboard.writeText(resultText).then(() => {
+                alert('Texto copiado para a área de transferência!');
+            }).catch(err => {
+                alert('Falha ao copiar o texto: ' + err);
+            });
+        }
+
+        // Set the default date when the page loads
+        window.onload = setDefaultDate;
+    </script>
+</body>
+</html>
