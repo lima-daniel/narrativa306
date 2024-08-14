@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Narrativa Embriaguez ao volante</title>
-	<h1>PRF DANIEL LIMA - GFTT BJ</h1>
+    <h1>PRF DANIEL LIMA - GFTT BJ</h1>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -19,7 +19,7 @@
         }
         label {
             display: block;
-            margin-bottom: 5px;	
+            margin-bottom: 5px;    
         }
         input[type="text"], select {
             width: 100%;
@@ -104,10 +104,11 @@
                 <label for="ethanol">Valor do Etilômetro (Ex.: 0.77):</label>
                 <input type="text" id="ethanol" name="ethanol" value="0.50">
             </div>
-            <div class="form-group">
-				<label for="ethanol_considerado">Valor Considerado (Ex.: 0.70):</label>
-				<input type="text" id="ethanol_considerado" name="ethanol_considerado" value="0.45">
+            <!--<div class="form-group">
+                <label for="ethanol_considerado">Valor Considerado (Ex.: 0.70):</label>
+                <input type="text" id="ethanol_considerado" name="ethanol_considerado" value="0.45">
             </div>
+            !-->
             <div class="form-group">
                 <label for="numteste">Número do Comprovante (Ex.: 1134):</label>
                 <input type="text" id="numteste" name="numteste" value="1150">
@@ -153,6 +154,12 @@
             document.getElementById('licensing_status').value = 'falta_habilitado'; // Set default value here
         }
 
+        function toFixedWithoutRounding(value, decimals) {
+            // Convert value to a string with specified decimal places
+            const factor = Math.pow(10, decimals);
+            return (Math.floor(value * factor) / factor).toFixed(decimals);
+        }
+
         function generateText() {
             const date = document.getElementById('date').value;
             const time = document.getElementById('time').value;
@@ -165,8 +172,18 @@
             const plate = document.getElementById('plate').value;
             const name = document.getElementById('name').value;
             const cpf = document.getElementById('cpf').value;
-            const ethanol = document.getElementById('ethanol').value;
-            const ethanol_considerado = document.getElementById('ethanol_considerado').value;
+            const ethanol = parseFloat(document.getElementById('ethanol').value);
+
+            let ethanol_considerado;
+
+            if (ethanol < 0.40) {
+                ethanol_considerado = toFixedWithoutRounding(ethanol - 0.032, 2); // Const reduction for low values
+            } else if (ethanol >= 0.40 && ethanol < 2.01) {
+                ethanol_considerado = toFixedWithoutRounding(ethanol * 0.92, 2); // 8% reduction for high values
+            } else {
+                ethanol_considerado = toFixedWithoutRounding(ethanol * 0.70, 2); // 30% reduction for very high values
+            }
+
             const licensingStatus = document.getElementById('licensing_status').value;
             const anodolicenciamento = document.getElementById('anodolicenciamento').value;
             const driverDisabled = document.getElementById('driver_disabled').checked;
