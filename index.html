@@ -4,47 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Narrativa Embriaguez ao volante</title>
-    <h1>PRF DANIEL LIMA - GFTT BJ</h1>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .container {
-            max-width: 600px;
-            margin: auto;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;    
-        }
-        input[type="text"], select {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-        }
-        button {
-            padding: 10px 15px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .result {
-            margin-top: 20px;
-            border: 1px solid #ddd;
-            padding: 15px;
-            background-color: #f9f9f9;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
@@ -72,7 +32,7 @@
             </div>
             <div class="form-group">
                 <label for="vehicle">Marca e Modelo do Veículo (Ex.: HONDA CG 125 FAN KS):</label>
-                <input type="text" id="vehicle" name="vehicle" value="FIAT SIENA UBER PRATA GALADO">
+                <input type="text" id="vehicle" name="vehicle" value="MITSUBISHI L200 TRITON">
             </div>
             <div class="form-group">
                 <label for="motivo">Motivo da Abordagem:</label>
@@ -126,7 +86,7 @@
                 </select>
             </div>
             <div class="form-group" id="anodolicenciamento-group">
-                <label for="anodolicenciamento">Ano do Último licenciamento (Ex.: 2023):</label>
+                <label for="anodolicenciamento">Ano do Último Licenciamento (Ex.: 2023):</label>
                 <input type="text" id="anodolicenciamento" name="anodolicenciamento">
             </div>
             <button type="button" onclick="generateText()">Gerar Narrativa</button>
@@ -136,108 +96,6 @@
             <!-- Resulting text will be displayed here -->
         </div>
     </div>
-    
-    <script>
-        function formatDate(date) {
-            const options = { day: 'numeric', month: 'long', year: 'numeric' };
-            const dateString = date.toLocaleDateString('pt-BR', options);
-            // Capitalize the first letter of the month
-            return dateString.replace(/(\w+ de )(\w+)/, (_, prefix, month) => prefix + month.charAt(0).toUpperCase() + month.slice(1));
-        }
-
-        function setDefaultDate() {
-            const today = new Date();
-            const formattedDate = formatDate(today);
-            document.getElementById('date').value = formattedDate;
-            // Set the driver_disabled checkbox to checked
-            document.getElementById('driver_disabled').checked = true;
-            document.getElementById('licensing_status').value = 'falta_habilitado'; // Set default value here
-        }
-
-        function toFixedWithoutRounding(value, decimals) {
-            // Convert value to a string with specified decimal places
-            const factor = Math.pow(10, decimals);
-            return (Math.floor(value * factor) / factor).toFixed(decimals);
-        }
-
-        function generateText() {
-            const date = document.getElementById('date').value;
-            const time = document.getElementById('time').value;
-            const br = document.getElementById('br').value;
-            const km = document.getElementById('km').value;
-            const city = document.getElementById('city').value;
-            const numteste = document.getElementById('numteste').value;
-            const serialetilometro = document.getElementById('serialetilometro').value;
-            const vehicle = document.getElementById('vehicle').value;
-            const plate = document.getElementById('plate').value;
-            const name = document.getElementById('name').value;
-            const cpf = document.getElementById('cpf').value;
-            const ethanol = parseFloat(document.getElementById('ethanol').value);
-
-            let ethanol_considerado;
-
-            if (ethanol < 0.40) {
-                ethanol_considerado = toFixedWithoutRounding(ethanol - 0.032, 2); // Const reduction for low values
-            } else if (ethanol >= 0.40 && ethanol < 2.01) {
-                ethanol_considerado = toFixedWithoutRounding(ethanol * 0.92, 2); // 8% reduction for high values
-            } else {
-                ethanol_considerado = toFixedWithoutRounding(ethanol * 0.70, 2); // 30% reduction for very high values
-            }
-
-            const licensingStatus = document.getElementById('licensing_status').value;
-            const anodolicenciamento = document.getElementById('anodolicenciamento').value;
-            const driverDisabled = document.getElementById('driver_disabled').checked;
-            const motivo = document.getElementById('motivo').value;
-
-            let licensingText;
-            switch (licensingStatus) {
-                case 'atrasado':
-                    licensingText = `O veículo envolvido foi recolhido ao pátio contratado da PRF por estar com licenciamento em atraso desde ${anodolicenciamento}.`;
-                    break;
-                case 'regular':
-                    licensingText = 'O veículo envolvido foi entregue a condutor habilitado e com teste do etilômetro com resultado 0.00 mg/L.';
-                    break;
-                case 'falta_habilitado':
-                    licensingText = 'O veículo envolvido foi recolhido ao pátio contratado da PRF por falta de condutor habilitado.';
-                    break;
-                default:
-                    licensingText = 'Falta de condutor habilitado';
-            }
-
-            let motivoText;
-            switch (motivo) {
-                case 'zigzag':
-                    motivoText = 'O condutor dirigia realizando manobras de zigue-zague na via,';
-                    break;
-                case 'sem_capacete':
-                    motivoText = 'O condutor conduzia o veículo sem capacete de segurança,';
-                    break;
-                case 'passageiro_sem_capacete':
-                    motivoText = 'O condutor transportava passageiro sem utilizar capacete de segurança,';
-                    break;
-                default:
-                    motivoText = 'O motivo da abordagem não foi especificado.';
-            }
-
-            const driverStatusText = driverDisabled ? ', inabilitado para conduzir veículos automotores' : '';
-
-            const resultText = 
-                `Em ${date}, por volta das ${time}, esta equipe estava realizando fiscalização estática de Alcoolemia no km ${km} da BR ${br}, no município de ${city}, quando foi dada ordem de parada ao veículo ${vehicle}, de placa ${plate}, conduzido por ${name} (CPF: ${cpf})${driverStatusText}. ${motivoText} o que motivou a abordagem. O condutor apresentava sinais de embriaguez como fala embargada, vestes em desordem, olhos vermelhos e odor etílico. A equipe PRF convidou o condutor a realizar o teste do etilômetro. O abordado relatou que havia ingerido bebidas alcoólicas ao longo da noite. O envolvido foi convidado a realizar o exame de alcoolemia, conforme o comprovante nº ${numteste}, impresso pelo aparelho (etilômetro) de marca ALCOLIZER, modelo LE5 e número de série ${serialetilometro}, constatou-se o teor de ${ethanol} miligramas de álcool por litro de ar expelido pelos pulmões, sendo considerado, conforme a Portaria n.º 369/2021/INMETRO, o valor de ${ethanol_considerado} mg/L. Diante das informações obtidas foi constatada ocorrência de conduzir veículo com capacidade psicomotora alterada em razão da influência de álcool - Embriaguez ao volante. Foi dada voz de prisão ao condutor, que foi informado de todos os seus direitos constitucionais, e feito o encaminhamento para a Delegacia de Polícia Civil de ${city} para os procedimentos legais. Não foram utilizadas algemas, devido a colaboração do autor. Por fim, informa-se que o conduzido foi entregue sem nenhuma lesão aparente. ${licensingText}`;
-
-            document.getElementById('result').innerText = resultText;
-        }
-
-        function copyToClipboard() {
-            const resultText = document.getElementById('result').innerText;
-            navigator.clipboard.writeText(resultText).then(() => {
-                alert('Texto copiado para a área de transferência!');
-            }).catch(err => {
-                alert('Falha ao copiar o texto: ' + err);
-            });
-        }
-
-        // Set the default date when the page loads
-        window.onload = setDefaultDate;
-    </script>
+    <script src="scripts.js"></script>
 </body>
 </html>
